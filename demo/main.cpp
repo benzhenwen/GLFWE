@@ -1,6 +1,3 @@
-#include <logger/logger.hpp>
-static constexpr Logger logger = Logger("MAIN");
-
 #include <GLFWE/window.hpp>
 #include <GLFWE/shader.hpp>
 #include <GLFWE/shader_program.hpp>
@@ -14,6 +11,9 @@ static constexpr Logger logger = Logger("MAIN");
 
 #include <chrono>
 #include <ctime>
+
+#include <logger/logger.hpp>
+static constexpr Logger logger = Logger("MAIN");
 
 int main() {
 

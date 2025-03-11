@@ -12,7 +12,7 @@ freetype_dep = subproject('freetype').get_variable('freetype_dep')
 
 glfwe_dep = declare_dependency(
     include_directories: 'include/',
-    dependencies: [glad_dep, glfw_dep, logger_dep, stb_dep],
+    dependencies: [logger_dep, glad_dep, glfw_dep, stb_dep],
     sources: 'include/GLFWE/statics.cpp'
 )
 
