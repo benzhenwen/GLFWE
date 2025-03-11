@@ -1,0 +1,8 @@
+/build/
+/.vscode/
+
+# freetype subproject
+subprojects/*
+!subprojects/freetype.wrap
+!subprojects/glm.wrap
+!subprojects/logger.wrap
