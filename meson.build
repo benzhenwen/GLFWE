@@ -8,7 +8,7 @@ subdir('glad')
 subdir('stb')
 
 logger_dep = dependency('logger')
-freetype_dep = dependency('freetype2')
+freetype_dep = subproject('freetype').get_variable('freetype_dep')
 
 glfwe_dep = declare_dependency(
     include_directories: 'include/',
