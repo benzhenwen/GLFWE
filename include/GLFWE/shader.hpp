@@ -22,7 +22,7 @@ public:
     Shader(GLenum type):
     glfw_shader(glCreateShader(type)) {}
 
-    void destroy() {
+    ~Shader() {
         glDeleteShader(glfw_shader);
         logger << "Shader " << glfw_shader << " destroyed"; 
     }

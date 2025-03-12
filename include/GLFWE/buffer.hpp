@@ -18,7 +18,7 @@ public:
         logger << "Buffer " << glfw_buffer << " successfully created";
     }
 
-    void destroy() {
+    ~Buffer() {
         glDeleteBuffers(1, &glfw_buffer);
         logger << "Buffer " << glfw_buffer << " destroyed"; 
     }
