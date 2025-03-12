@@ -16,10 +16,10 @@ protected:
     static constexpr Logger logger = Logger("GLFWTEXT");
 
     struct Character {
-        GLFWE::Texture Texture; 
-        glm::ivec2  Size;        // Size of glyph
-        glm::ivec2  Bearing;     // Offset from baseline to left/top of glyph
-        signed long Advance;     // Offset to advance to next glyph
+        GLFWE::Texture texture; 
+        glm::ivec2  size;        // Size of glyph
+        glm::ivec2  bearing;     // Offset from baseline to left/top of glyph
+        signed long advance;     // Offset to advance to next glyph
     };
     
     std::map<char, Character> characters;
@@ -49,16 +49,18 @@ public:
 
         // load each character
         for (unsigned char character = lower_ascii; character < upper_ascii; character++) {
+            logger << character;
             if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
                 logger.log(Logger::CRITICAL) << "FreeType failed to load character glyph for: " << character;
             }
 
-            characters[character] = {
-                generate_char_texture(face, character),
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                face->glyph->advance.x
-            };
+            characters.emplace(character, Character());
+            characters[character].size = glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows);
+            characters[character].bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
+            characters[character].advance = face->glyph->advance.x;
+
+            characters[character].texture.buffer_image_2D(0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            characters[character].texture.set_wrapping_behavior(WRAP_CLAMP_EDGE).set_filtering_behavior(FILTER_LINEAR);            
         }
         
         // revert alignment
@@ -71,13 +73,14 @@ public:
         logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
     }
 
-protected:
-    GLFWE::Texture generate_char_texture(FT_Face & face, unsigned char character) {
-        auto character_texture = GLFWE::Texture();
-        character_texture.buffer_image_2D(0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
-        character_texture.set_wrapping_behavior(WRAP_CLAMP_EDGE).set_filtering_behavior(FILTER_LINEAR);
+    void destroy() {
+        for (unsigned int i = lower_ascii; i < upper_ascii; i++) {
+            logger << "del char: " << i;
+            characters[i].texture.destroy();
+            characters.erase(i);
+        }
 
-        return character_texture;
+        logger << "Font destroyed";
     }
 };
 }
