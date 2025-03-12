@@ -3,7 +3,6 @@ project('GLFWE', ['c', 'cpp'],
 )
 
 glfw_dep = dependency('glfw3')
-
 freetype_dep = dependency('freetype', fallback: ['freetype', 'freetype_dep'])
 glm_dep = dependency('glm', fallback: ['glm', 'glm_dep'])
 logger_dep = dependency('logger', fallback: ['logger', 'logger_dep'])
