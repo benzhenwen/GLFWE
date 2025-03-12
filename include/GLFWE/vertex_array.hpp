@@ -21,8 +21,8 @@ public:
         logger << "vertex array " << glfw_vertex_array << " successfully created";
     }
 
-    ~VertexArray() {
-        // vertex buffer automatically deleted on de-allocation
+    void destroy() {
+        vertex_buffer.destroy();
         glDeleteVertexArrays(1, &glfw_vertex_array);
         logger << "vertex array " << glfw_vertex_array << " destroyed";
     }

@@ -19,7 +19,7 @@ public:
         glGenTextures(1, &glfw_texture);
     }
 
-    ~Texture() {
+    void destroy() {
         glDeleteTextures(1, &glfw_texture);
         logger << "Texture " << glfw_texture << " destroyed"; 
     }

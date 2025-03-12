@@ -21,7 +21,7 @@ public:
         logger << "Program " << glfw_shader_program << " created.";
     }
 
-    ~ShaderProgram() {
+    void destroy() {
         glDeleteProgram(glfw_shader_program);
     }
 
