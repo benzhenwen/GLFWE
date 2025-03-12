@@ -3,6 +3,6 @@
 
 # freetype subproject
 subprojects/*
-!subprojects/freetype.wrap
-!subprojects/glm.wrap
-!subprojects/logger.wrap
+
+!subprojects/*.wrap
+# can't figure out how to make !subprojects/glm/meson.build to work properly so just run git add -f subprojects/glm/meson.build smil

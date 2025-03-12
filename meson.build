@@ -7,12 +7,13 @@ glfw_dep = dependency('glfw3')
 subdir('glad')
 subdir('stb')
 
+freetype_dep = dependency('freetype', fallback: ['freetype', 'freetype_dep'])
+glm_dep = dependency('glm', fallback: ['glm', 'glm_dep'])
 logger_dep = dependency('logger')
-freetype_dep = subproject('freetype').get_variable('freetype_dep')
 
 glfwe_dep = declare_dependency(
     include_directories: 'include/',
-    dependencies: [logger_dep, glad_dep, glfw_dep, stb_dep],
+    dependencies: [logger_dep, glad_dep, glfw_dep, freetype_dep, glm_dep, stb_dep],
     sources: 'include/GLFWE/statics.cpp'
 )
 
