@@ -2,7 +2,7 @@
 /.vscode/
 
 # freetype subproject
-# subprojects/*
+subprojects/*
 
-# !subprojects/*.wrap
+!subprojects/*.wrap
 # can't figure out how to make !subprojects/glm/meson.build to work properly so just force add changes smil
