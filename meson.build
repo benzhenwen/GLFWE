@@ -9,7 +9,7 @@ subdir('stb')
 
 freetype_dep = dependency('freetype', fallback: ['freetype', 'freetype_dep'])
 glm_dep = dependency('glm', fallback: ['glm', 'glm_dep'])
-logger_dep = dependency('logger')
+logger_dep = dependency('logger', fallback: ['logger', 'logger_dep'])
 
 glfwe_dep = declare_dependency(
     include_directories: 'include/',
@@ -17,6 +17,4 @@ glfwe_dep = declare_dependency(
     sources: 'include/GLFWE/statics.cpp'
 )
 
-executable('GLFWE_demo', 'demo/main.cpp',
-    win_subsystem: 'windows',
-    dependencies: [logger_dep, glfwe_dep])
+meson.override_dependency('glfwe', glfwe_dep)
