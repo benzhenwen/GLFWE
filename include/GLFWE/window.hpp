@@ -107,6 +107,10 @@ public:
                 logger.log(Logger::CRITICAL) << "Failed to initialize GLAD";
                 exit(-1);
             }
+            
+            // blend mode
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
             logger << "GLAD initiated";
         }

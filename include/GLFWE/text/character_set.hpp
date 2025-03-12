@@ -44,6 +44,9 @@ public:
         // set ft font size
         FT_Set_Pixel_Sizes(face, 0, font_height);
 
+        // gl alignment
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+
         // load each character
         for (unsigned char character = lower_ascii; character < upper_ascii; character++) {
             if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
@@ -57,8 +60,15 @@ public:
                 face->glyph->advance.x
             };
         }
+        
+        // revert alignment
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);   
 
-        logger << "meow";
+        // cleanup
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+
+        logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
     }
 
 protected:
