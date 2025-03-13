@@ -14,8 +14,6 @@ protected:
 
     unsigned int glfw_buffer;
 
-    bool destroyed = false;
-
 public:
     Buffer() {
         glGenBuffers(1, &glfw_buffer);
@@ -24,15 +22,15 @@ public:
 
     Buffer(Buffer & other) = delete;
     Buffer(Buffer && other): glfw_buffer(other.glfw_buffer) {
-        other.destroyed = true;
+        other.glfw_buffer = 0;
     }
 
     ~Buffer() {
-        if (!destroyed) destroy();
+        if (glfw_buffer) destroy();
     }
 
     void destroy() {
-        if (destroyed || Window::has_terminated()) return;
+        if (!glfw_buffer || Window::has_terminated()) return;
         glDeleteBuffers(1, &glfw_buffer);
         logger << "Buffer " << glfw_buffer << " destroyed"; 
     }

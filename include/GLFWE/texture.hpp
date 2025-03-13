@@ -16,8 +16,6 @@ protected:
 
     unsigned int glfw_texture;
 
-    bool destroyed = false;
-
 public:
     Texture() {
         glGenTextures(1, &glfw_texture);
@@ -25,16 +23,17 @@ public:
 
     Texture(Texture & other) = delete;
     Texture(Texture && other): glfw_texture(other.glfw_texture) {
-        other.destroyed = true;
+        other.glfw_texture = 0;
     }
 
     ~Texture() {
-        if (!destroyed) destroy();
+        if (glfw_texture) destroy();
     }
 
     void destroy() {
-        if (destroyed || Window::has_terminated()) return;
+        if (!glfw_texture || Window::has_terminated()) return;
         glDeleteTextures(1, &glfw_texture);
+        glfw_texture = 0;
         logger << "Texture " << glfw_texture << " destroyed"; 
     }
 

@@ -16,8 +16,6 @@ protected:
     Buffer vertex_buffer;
     unsigned int glfw_vertex_array;
 
-    bool destroyed = false;
-
 public:
     VertexArray() {
         glGenVertexArrays(1, &glfw_vertex_array);  
@@ -26,15 +24,15 @@ public:
 
     VertexArray(VertexArray & other) = delete;
     VertexArray(VertexArray && other): glfw_vertex_array(other.glfw_vertex_array) {
-        other.destroyed = true;
+        other.glfw_vertex_array = 0;
     }
 
     ~VertexArray() {
-        if (!destroyed) destroy();
+        if (glfw_vertex_array) destroy();
     }
 
     void destroy() {
-        if (destroyed || Window::has_terminated()) return;
+        if (!glfw_vertex_array || Window::has_terminated()) return;
         vertex_buffer.destroy();
         glDeleteVertexArrays(1, &glfw_vertex_array);
         logger << "vertex array " << glfw_vertex_array << " destroyed";

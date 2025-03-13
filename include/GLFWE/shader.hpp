@@ -15,9 +15,7 @@ class Shader {
 protected:
     static constexpr Logger logger = Logger("Shader");
 
-    const unsigned int glfw_shader;
-
-    bool destroyed = false;
+    unsigned int glfw_shader;
 
 public:
     #define VERTEX_SHADER GL_VERTEX_SHADER
@@ -28,15 +26,15 @@ public:
 
     Shader(Shader & other) = delete;
     Shader(Shader && other): glfw_shader(other.glfw_shader) {
-        other.destroyed = true;
+        other.glfw_shader = 0;
     }
 
     ~Shader() {
-        if (!destroyed) destroy();
+        if (glfw_shader) destroy();
     }
 
     void destroy() {
-        if (destroyed || Window::has_terminated()) return;
+        if (!glfw_shader || Window::has_terminated()) return;
         glDeleteShader(glfw_shader);
         logger << "Shader " << glfw_shader << " destroyed"; 
     }

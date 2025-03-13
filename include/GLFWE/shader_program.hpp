@@ -13,10 +13,8 @@ class ShaderProgram {
 protected:
     static constexpr Logger logger = Logger("Shader Program");
 
-    const unsigned int glfw_shader_program;
+    unsigned int glfw_shader_program;
     bool linked = false;
-
-    bool destroyed = false;
 
 public:
     ShaderProgram(): glfw_shader_program(glCreateProgram()) {
@@ -25,15 +23,15 @@ public:
 
     ShaderProgram(ShaderProgram & other) = delete;
     ShaderProgram(ShaderProgram && other): glfw_shader_program(other.glfw_shader_program) {
-        other.destroyed = true;
+        other.glfw_shader_program = 0;
     }
 
     ~ShaderProgram() {
-        if (!destroyed) destroy();
+        if (glfw_shader_program) destroy();
     }
 
     void destroy() {
-        if (destroyed || Window::has_terminated()) return;
+        if (!glfw_shader_program || Window::has_terminated()) return;
         glDeleteProgram(glfw_shader_program);
     }
 
