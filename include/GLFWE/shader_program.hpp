@@ -16,12 +16,24 @@ protected:
     const unsigned int glfw_shader_program;
     bool linked = false;
 
+    bool destroyed = false;
+
 public:
     ShaderProgram(): glfw_shader_program(glCreateProgram()) {
         logger << "Program " << glfw_shader_program << " created.";
     }
 
+    ShaderProgram(ShaderProgram & other) = delete;
+    ShaderProgram(ShaderProgram && other): glfw_shader_program(other.glfw_shader_program) {
+        other.destroyed = true;
+    }
+
+    ~ShaderProgram() {
+        if (!destroyed) destroy();
+    }
+
     void destroy() {
+        if (destroyed || Window::has_terminated()) return;
         glDeleteProgram(glfw_shader_program);
     }
 
@@ -29,12 +41,12 @@ public:
         return glfw_shader_program;
     }
 
-    ShaderProgram use() {
+    ShaderProgram & use() {
         glUseProgram(glfw_shader_program);
         return *this;
     }
 
-    ShaderProgram attach_shader(GLFWE::Shader shader) {
+    ShaderProgram & attach_shader(GLFWE::Shader shader) {
         glAttachShader(glfw_shader_program, shader.id());
         linked = false;
         logger << "Shader " << shader.id() << " successfully attached to program " << glfw_shader_program;
@@ -45,7 +57,7 @@ public:
         return glGetUniformLocation(glfw_shader_program, name.data());
     }
 
-    ShaderProgram link() {
+    ShaderProgram & link() {
         if (!linked) {
             glLinkProgram(glfw_shader_program);
             GLint success;

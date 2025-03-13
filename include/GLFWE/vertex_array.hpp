@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 
 #include <GLFWE/buffer.hpp>
+#include <GLFWE/window.hpp>
 
 #include <logger/logger.hpp>
 
@@ -15,13 +16,25 @@ protected:
     Buffer vertex_buffer;
     unsigned int glfw_vertex_array;
 
+    bool destroyed = false;
+
 public:
     VertexArray() {
         glGenVertexArrays(1, &glfw_vertex_array);  
         logger << "vertex array " << glfw_vertex_array << " successfully created";
     }
 
+    VertexArray(VertexArray & other) = delete;
+    VertexArray(VertexArray && other): glfw_vertex_array(other.glfw_vertex_array) {
+        other.destroyed = true;
+    }
+
+    ~VertexArray() {
+        if (!destroyed) destroy();
+    }
+
     void destroy() {
+        if (destroyed || Window::has_terminated()) return;
         vertex_buffer.destroy();
         glDeleteVertexArrays(1, &glfw_vertex_array);
         logger << "vertex array " << glfw_vertex_array << " destroyed";
@@ -52,13 +65,13 @@ public:
     #define TYPE_UNSIGNED_INT GL_UNSIGNED_INT
 
     template<typename T>
-    VertexArray buffer_vertex_data(T & data, GLenum draw_type) {
+    VertexArray & buffer_vertex_data(T & data, GLenum draw_type) {
         bind();
         vertex_buffer.buffer_data(data, ARRAY_BUFFER, draw_type);
         return *this;
     }
     
-    VertexArray assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
+    VertexArray & assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
         bind();
         
         glVertexAttribPointer(location, size, type, normalized, stride, (const void*) offset);

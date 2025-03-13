@@ -5,6 +5,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <GLFWE/window.hpp>
+
 #include <logger/logger.hpp>
 
 namespace GLFWE {
@@ -14,12 +16,24 @@ protected:
 
     unsigned int glfw_texture;
 
+    bool destroyed = false;
+
 public:
     Texture() {
         glGenTextures(1, &glfw_texture);
     }
 
+    Texture(Texture & other) = delete;
+    Texture(Texture && other): glfw_texture(other.glfw_texture) {
+        other.destroyed = true;
+    }
+
+    ~Texture() {
+        if (!destroyed) destroy();
+    }
+
     void destroy() {
+        if (destroyed || Window::has_terminated()) return;
         glDeleteTextures(1, &glfw_texture);
         logger << "Texture " << glfw_texture << " destroyed"; 
     }
@@ -33,7 +47,7 @@ public:
     // #define TEXTURE_3D GL_TEXTURE_3D
 
 
-    Texture buffer_image_from_path(std::string path) {
+    Texture & buffer_image_from_path(std::string path) {
         stbi_set_flip_vertically_on_load(true);
 
         int width, height, nChannels;
@@ -48,7 +62,7 @@ public:
         return *this;
     }
 
-    Texture buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data) {
+    Texture & buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data) {
 
         // TODO: MAKE THIS DYNAMIC
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -73,7 +87,7 @@ public:
     };
 
     // Set color mask only when you are using WRAP_CLAMP_BORDER
-    Texture set_wrapping_behavior(GLenum wrapping, GLenum axis = AXIS_ALL, Color mask_color = {0, 0, 0, 1}) {
+    Texture & set_wrapping_behavior(GLenum wrapping, GLenum axis = AXIS_ALL, Color mask_color = {0, 0, 0, 1}) {
         bind();
         if (wrapping == WRAP_CLAMP_BORDER) {
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, mask_color.data());
@@ -93,7 +107,7 @@ public:
     #define ACTION_MINIMIZING GL_TEXTURE_MIN_FILTER
     #define ACTION_MAGNIFYING GL_TEXTURE_MAG_FILTER
     #define ACTION_ALL 0
-    Texture set_filtering_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
+    Texture & set_filtering_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
         bind();
         if (action == ACTION_ALL) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, behaviour);
@@ -113,7 +127,7 @@ public:
     #define ACTION_MINIMIZING GL_TEXTURE_MIN_FILTER
     #define ACTION_MAGNIFYING GL_TEXTURE_MAG_FILTER
     #define ACTION_ALL 0
-    Texture set_mipmap_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
+    Texture & set_mipmap_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
         bind();
         if (action == ACTION_ALL) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, behaviour);

@@ -38,6 +38,10 @@ public:
         return window_instances.find(id) != window_instances.end();
     }
 
+    static inline bool has_terminated() {
+        return !has_instance();
+    }
+
 // -------------------- EVENT HANDLING --------------------
 
 
