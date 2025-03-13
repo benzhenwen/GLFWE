@@ -44,14 +44,14 @@ public:
         return *this;
     }
 
-    ShaderProgram & attach_shader(GLFWE::Shader shader) {
+    ShaderProgram & attach_shader(GLFWE::Shader & shader) {
         glAttachShader(glfw_shader_program, shader.id());
         linked = false;
         logger << "Shader " << shader.id() << " successfully attached to program " << glfw_shader_program;
         return *this;
     }
 
-    int get_uniform_location(std::string name) {
+    int get_uniform_location(const std::string & name) {
         return glGetUniformLocation(glfw_shader_program, name.data());
     }
 

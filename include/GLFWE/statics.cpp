@@ -1,7 +1,9 @@
+// Handling core members
 #include <GLFWE/window.hpp>
 #include <GLFWE/buffer.hpp>
 #include <GLFWE/vertex_array.hpp>
 #include <GLFWE/texture.hpp>
+#include <GLFWE/text/character_set.hpp>
 
 using namespace GLFWE;
 
@@ -12,3 +14,8 @@ std::unordered_map<u_int16_t, std::unique_ptr<Window>> Window::window_instances;
 std::unordered_map<unsigned int, unsigned int> Buffer::current_bound_buffer;
 std::unordered_map<unsigned int, unsigned int> VertexArray::current_bound_array;
 std::unordered_map<unsigned int, unsigned int> Texture::current_bound_texture;
+
+// text vao and program
+bool Text::CharacterSet::is_prepared = false;
+// VertexArray Text::CharacterSet::VAO;
+// ShaderProgram Text::CharacterSet::program;

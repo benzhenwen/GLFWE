@@ -5,6 +5,8 @@
 
 #include <GLFWE/texture.hpp>
 #include <GLFWE/vertex_array.hpp>
+#include <GLFWE/shader.hpp>
+#include <GLFWE/shader_program.hpp>
 
 #include <logger/logger.hpp>
 
@@ -24,9 +26,12 @@ protected:
     };
     
     std::map<char, Character> characters;
-    GLFWE::VertexArray VAO;
 
     const unsigned int lower_ascii, upper_ascii;
+
+    static bool is_prepared; // = false by default
+    static GLFWE::VertexArray VAO;
+    static GLFWE::ShaderProgram program;    
 
 public:
     CharacterSet(const std::filesystem::path & font_path, unsigned int font_height, unsigned int _lower_ascii = 0,  unsigned int _upper_ascii = 128):
@@ -71,9 +76,11 @@ public:
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
 
-        // prepare vertex array
-        VAO.buffer_vertex_data(sizeof(float)*6*4, NULL, DYNAMIC_DRAW);
-        VAO.assign_vertex_attribute(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float));
+        // prepare vertex array and program
+        if (!is_prepared) {
+            // prepare_VAO_and_program();
+            is_prepared = true;
+        }
 
         // done
         logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
@@ -92,6 +99,43 @@ public:
     // the function we've all been waiting for!!
     void render_string(Window & window, std::string text, float x, float y, float scale, glm::vec3 color) {
         window.make_context_current();
+    }
+
+private:
+    static void prepare_VAO_and_program() {
+        VAO.buffer_vertex_data(sizeof(float)*6*4, NULL, DYNAMIC_DRAW);
+        VAO.assign_vertex_attribute(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float));
+
+        auto vertex_shader = GLFWE::Shader(VERTEX_SHADER);
+        vertex_shader.load_raw(
+            R"(#version 330 core
+            layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
+            out vec2 TexCoords;
+
+            uniform mat4 projection;
+
+            void main()
+            {
+            gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
+            TexCoords = vertex.zw;
+        })");
+        auto fragment_shader = GLFWE::Shader(FRAGMENT_SHADER);
+        fragment_shader.load_raw(
+            R"(#version 330 core
+            in vec2 TexCoords;
+            out vec4 color;
+
+            uniform sampler2D text;
+            uniform vec3 textColor;
+
+            void main()
+            {    
+                vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);
+                color = vec4(textColor, 1.0) * sampled;
+            })"
+        );
+
+        program.attach_shader(vertex_shader).attach_shader(fragment_shader);
     }
 };
 }
