@@ -11,6 +11,7 @@
 #include <logger/logger.hpp>
 
 #include <filesystem>
+#include <memory>
 #include <map>
 
 namespace GLFWE::Text {
@@ -29,13 +30,17 @@ protected:
 
     const unsigned int lower_ascii, upper_ascii;
 
-    static bool is_prepared; // = false by default
-    static GLFWE::VertexArray VAO;
-    static GLFWE::ShaderProgram program;    
+    static std::unique_ptr<GLFWE::VertexArray> VAO;
+    static std::unique_ptr<GLFWE::ShaderProgram> program;
 
 public:
     CharacterSet(const std::filesystem::path & font_path, unsigned int font_height, unsigned int _lower_ascii = 0,  unsigned int _upper_ascii = 128):
     lower_ascii(_lower_ascii), upper_ascii(_upper_ascii) {
+        // prepare vertex array and program
+        if (VAO == nullptr) {
+            prepare_VAO_and_program();
+        }
+        
         // init ft
         FT_Library ft;
         if (FT_Init_FreeType(&ft)) {
@@ -76,12 +81,6 @@ public:
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
 
-        // prepare vertex array and program
-        if (!is_prepared) {
-            // prepare_VAO_and_program();
-            is_prepared = true;
-        }
-
         // done
         logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
     }
@@ -97,19 +96,60 @@ public:
     }
 
     // the function we've all been waiting for!!
-    void render_string(Window & window, std::string text, float x, float y, float scale, glm::vec3 color) {
-        window.make_context_current();
+    void render_string(std::string text, float x, float y, float scale, glm::vec3 color) {
+        // activate corresponding render state	
+        s.Use();
+        glUniform3f(glGetUniformLocation(s.Program, "textColor"), color.x, color.y, color.z);
+        glActiveTexture(GL_TEXTURE0);
+        glBindVertexArray(VAO);
+
+        // iterate through all characters
+        std::string::const_iterator c;
+        for (c = text.begin(); c != text.end(); c++) {
+            // Character ch = Characters[*c];
+
+            // float xpos = x + ch.Bearing.x * scale;
+            // float ypos = y - (ch.Size.y - ch.Bearing.y) * scale;
+
+            // float w = ch.Size.x * scale;
+            // float h = ch.Size.y * scale;
+            // // update VBO for each character
+            // float vertices[6][4] = {
+            //     { xpos,     ypos + h,   0.0f, 0.0f },            
+            //     { xpos,     ypos,       0.0f, 1.0f },
+            //     { xpos + w, ypos,       1.0f, 1.0f },
+
+            //     { xpos,     ypos + h,   0.0f, 0.0f },
+            //     { xpos + w, ypos,       1.0f, 1.0f },
+            //     { xpos + w, ypos + h,   1.0f, 0.0f }           
+            // };
+            // // render glyph texture over quad
+            // glBindTexture(GL_TEXTURE_2D, ch.textureID);
+            // // update content of VBO memory
+            // glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            // glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); 
+            // glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // // render quad
+            // glDrawArrays(GL_TRIANGLES, 0, 6);
+            // // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            // x += (ch.Advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+        }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 private:
     static void prepare_VAO_and_program() {
-        VAO.buffer_vertex_data(sizeof(float)*6*4, NULL, DYNAMIC_DRAW);
-        VAO.assign_vertex_attribute(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float));
+        VAO = std::make_unique<GLFWE::VertexArray>();
+        program = std::make_unique<GLFWE::ShaderProgram>();
+
+        VAO->buffer_vertex_data(sizeof(float)*6*4, NULL, DYNAMIC_DRAW);
+        VAO->assign_vertex_attribute(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float));
 
         auto vertex_shader = GLFWE::Shader(VERTEX_SHADER);
         vertex_shader.load_raw(
             R"(#version 330 core
-            layout (location = 0) in vec4 vertex; // <vec2 pos, vec2 tex>
+            layout (location = 0) in vec4 vertex;
             out vec2 TexCoords;
 
             uniform mat4 projection;
@@ -135,7 +175,7 @@ private:
             })"
         );
 
-        program.attach_shader(vertex_shader).attach_shader(fragment_shader);
+        program->attach_shader(vertex_shader).attach_shader(fragment_shader);
     }
 };
 }

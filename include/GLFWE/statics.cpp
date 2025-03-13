@@ -16,6 +16,5 @@ std::unordered_map<unsigned int, unsigned int> VertexArray::current_bound_array;
 std::unordered_map<unsigned int, unsigned int> Texture::current_bound_texture;
 
 // text vao and program
-bool Text::CharacterSet::is_prepared = false;
-// VertexArray Text::CharacterSet::VAO;
-// ShaderProgram Text::CharacterSet::program;
+std::unique_ptr<VertexArray> Text::CharacterSet::VAO;
+std::unique_ptr<ShaderProgram> Text::CharacterSet::program;
