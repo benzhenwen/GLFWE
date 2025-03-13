@@ -64,10 +64,18 @@ public:
     #define TYPE_INT GL_INT
     #define TYPE_UNSIGNED_INT GL_UNSIGNED_INT
 
+
+
     template<typename T>
     VertexArray & buffer_vertex_data(T & data, GLenum draw_type) {
         bind();
-        vertex_buffer.buffer_data(data, ARRAY_BUFFER, draw_type);
+        vertex_buffer.buffer_data(ARRAY_BUFFER, data, draw_type);
+        return *this;
+    }
+
+    VertexArray & buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
+        bind();
+        vertex_buffer.buffer_data(ARRAY_BUFFER, data_size, data, draw_type);
         return *this;
     }
     

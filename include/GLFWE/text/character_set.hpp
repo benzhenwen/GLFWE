@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include <GLFWE/texture.hpp>
+#include <GLFWE/vertex_array.hpp>
 
 #include <logger/logger.hpp>
 
@@ -23,6 +24,7 @@ protected:
     };
     
     std::map<char, Character> characters;
+    GLFWE::VertexArray VAO;
 
     const unsigned int lower_ascii, upper_ascii;
 
@@ -49,7 +51,6 @@ public:
 
         // load each character
         for (unsigned char character = lower_ascii; character < upper_ascii; character++) {
-            logger << character;
             if (FT_Load_Char(face, character, FT_LOAD_RENDER)) {
                 logger.log(Logger::CRITICAL) << "FreeType failed to load character glyph for: " << character;
             }
@@ -70,17 +71,27 @@ public:
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
 
+        // prepare vertex array
+        VAO.buffer_vertex_data(sizeof(float)*6*4, NULL, DYNAMIC_DRAW);
+        VAO.assign_vertex_attribute(0, 4, GL_FLOAT, GL_FALSE, 4*sizeof(float));
+
+        // done
         logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
     }
 
-    void destroy() {
-        for (unsigned int i = lower_ascii; i < upper_ascii; i++) {
-            logger << "del char: " << i;
-            characters[i].texture.destroy();
-            characters.erase(i);
-        }
+    ~CharacterSet() {
+        destroy();
+    }
 
+    void destroy() {
+        if (Window::has_terminated()) return;
+        characters.clear();
         logger << "Font destroyed";
+    }
+
+    // the function we've all been waiting for!!
+    void render_string(Window & window, std::string text, float x, float y, float scale, glm::vec3 color) {
+        window.make_context_current();
     }
 };
 }
