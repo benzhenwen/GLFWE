@@ -70,10 +70,21 @@ public:
         vertex_buffer.buffer_data(ARRAY_BUFFER, data, draw_type);
         return *this;
     }
-
     VertexArray & buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
         bind();
         vertex_buffer.buffer_data(ARRAY_BUFFER, data_size, data, draw_type);
+        return *this;
+    }
+
+    template<typename T>
+    VertexArray & buffer_vertex_sub_data(unsigned int offset, T & data) {
+        bind();
+        vertex_buffer.buffer_sub_data(ARRAY_BUFFER, offset, data);
+        return *this;
+    }
+    VertexArray & buffer_vertex_sub_data(unsigned int offset, unsigned int data_size, void * data) {
+        bind();
+        vertex_buffer.buffer_sub_data(ARRAY_BUFFER, offset, data_size, data);
         return *this;
     }
     
