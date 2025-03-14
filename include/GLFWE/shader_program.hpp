@@ -40,6 +40,8 @@ public:
     }
 
     ShaderProgram & use() {
+        if (!glfw_shader_program) logger.log(Logger::WARNING) << "Attempting to use a shader program ID 0";
+        if (!linked) logger.log(Logger::WARNING) << "Attempting to use shader program " << glfw_shader_program << " before linked";
         glUseProgram(glfw_shader_program);
         return *this;
     }

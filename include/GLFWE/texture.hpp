@@ -143,6 +143,7 @@ private:
     static std::unordered_map<unsigned int, unsigned int> current_bound_texture;
 public:
     void bind() {
+        if (!glfw_texture) logger.log(Logger::WARNING) << "Attempting to bind a texture ID 0";
         if (glfw_texture != current_bound_texture[Window::get_current_context()]) {
             glBindTexture(GL_TEXTURE_2D, glfw_texture);
             current_bound_texture[Window::get_current_context()] = glfw_texture;

@@ -102,8 +102,6 @@ public:
         glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
         glUniform4f(program->get_uniform_location("projection"), 0.0f, 800.0f, 0.0f, 600.0f);
 
-        // glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f);
-
         // iterate through all characters
         std::string::const_iterator c;
         for (c = text.begin(); c != text.end(); c++) {
@@ -169,7 +167,7 @@ private:
             })"
         );
 
-        program->attach_shader(vertex_shader).attach_shader(fragment_shader);
+        program->attach_shader(vertex_shader).attach_shader(fragment_shader).link();
     }
 };
 }
