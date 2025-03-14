@@ -90,9 +90,13 @@ public:
     
     VertexArray & assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
         bind();
-        glVertexAttribPointer(location, size, type, normalized, stride, (const void*) offset);
         glEnableVertexAttribArray(location);  
+        glVertexAttribPointer(location, size, type, normalized, stride, (const void*) offset);
         return *this;
+    }
+
+    Buffer & get_buffer() {
+        return vertex_buffer;
     }
 
 private:

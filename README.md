@@ -11,3 +11,6 @@ a small wrapper for glfw3 written in c++. in development and being used for a va
 
 ## In progress
 - Wrapper for string display
+
+## Issues
+- Improper binding system

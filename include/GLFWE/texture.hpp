@@ -61,12 +61,9 @@ public:
         return *this;
     }
 
-    Texture & buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data) {
-
-        // TODO: MAKE THIS DYNAMIC
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
+    Texture & buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data, unsigned int pack_alignment = 4) {
         bind();
+        glPixelStorei(GL_UNPACK_ALIGNMENT, pack_alignment);
         glTexImage2D(GL_TEXTURE_2D, mipmap_level, store_format, width, height, 0, source_format, source_datatype, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         

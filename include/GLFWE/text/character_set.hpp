@@ -2,6 +2,8 @@
 #include FT_FREETYPE_H 
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <GLFWE/texture.hpp>
 #include <GLFWE/vertex_array.hpp>
@@ -36,6 +38,9 @@ protected:
 public:
     CharacterSet(const std::filesystem::path & font_path, unsigned int font_height, unsigned int _lower_ascii = 0,  unsigned int _upper_ascii = 128):
     lower_ascii(_lower_ascii), upper_ascii(_upper_ascii) {
+        // gl alignment
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);  
+
         // prepare vertex array and program
         if (VAO == nullptr) {
             prepare_VAO_and_program();
@@ -54,10 +59,7 @@ public:
         }
 
         // set ft font size
-        FT_Set_Pixel_Sizes(face, 0, font_height);
-
-        // gl alignment
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);   
+        FT_Set_Pixel_Sizes(face, 0, font_height); 
 
         // load each character
         for (unsigned char character = lower_ascii; character < upper_ascii; character++) {
@@ -70,7 +72,7 @@ public:
             characters[character].bearing = glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top);
             characters[character].advance = face->glyph->advance.x;
 
-            characters[character].texture.buffer_image_2D(0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+            characters[character].texture.buffer_image_2D(0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer, 1);
             characters[character].texture.set_wrapping_behavior(WRAP_CLAMP_EDGE).set_filtering_behavior(FILTER_LINEAR);            
         }
         
@@ -81,7 +83,6 @@ public:
         FT_Done_Face(face);
         FT_Done_FreeType(ft);
 
-        // done
         logger << "Successfully loaded font: " << font_path.c_str() << " (" << lower_ascii << " - " << upper_ascii-1 << ")";
     }
 
@@ -96,15 +97,62 @@ public:
     }
 
     // the function we've all been waiting for!!
+    // void render_string(const std::string & text, float x, float y, float scale, glm::vec3 color) {
+    //     program->use();
+        
+    //     // projection
+    //     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f);
+    //     glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        
+    //     // color
+    //     glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
+    
+    //     // iterate through all characters
+    //     std::string::const_iterator c;
+    //     for (c = text.begin(); c != text.end(); c++) {
+    //         Character & ch = characters[*c];
+    //         ch.texture.bind();
+
+    //         float xpos = x + ch.bearing.x * scale;
+    //         float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+
+    //         float w = ch.size.x * scale;
+    //         float h = ch.size.y * scale;
+
+    //         float vertices[6][4] = {
+    //             { xpos,     ypos + h,   0.0f, 0.0f },            
+    //             { xpos,     ypos,       0.0f, 1.0f },
+    //             { xpos + w, ypos,       1.0f, 1.0f },
+
+    //             { xpos,     ypos + h,   0.0f, 0.0f },
+    //             { xpos + w, ypos,       1.0f, 1.0f },
+    //             { xpos + w, ypos + h,   1.0f, 0.0f } 
+    //         };
+
+    //         VAO->buffer_vertex_sub_data(0, vertices);
+    //         VAO->draw(GL_TRIANGLES, 0, 6);
+
+    //         x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+    //     }
+    // }
+
     void render_string(const std::string & text, float x, float y, float scale, glm::vec3 color) {
+        
+        glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f);
+        glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
         // activate corresponding render state	
         program->use();
+
+        // color
         glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
-        glUniform4f(program->get_uniform_location("projection"), 0.0f, 800.0f, 0.0f, 600.0f);
+
+        glBindVertexArray(VAO->id());
 
         // iterate through all characters
         std::string::const_iterator c;
-        for (c = text.begin(); c != text.end(); c++) {
+        for (c = text.begin(); c != text.end(); c++) 
+        {
             Character & ch = characters[*c];
 
             float xpos = x + ch.bearing.x * scale;
@@ -112,7 +160,7 @@ public:
 
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
-
+            // update VBO for each character
             float vertices[6][4] = {
                 { xpos,     ypos + h,   0.0f, 0.0f },            
                 { xpos,     ypos,       0.0f, 1.0f },
@@ -120,14 +168,22 @@ public:
 
                 { xpos,     ypos + h,   0.0f, 0.0f },
                 { xpos + w, ypos,       1.0f, 1.0f },
-                { xpos + w, ypos + h,   1.0f, 0.0f } 
+                { xpos + w, ypos + h,   1.0f, 0.0f }           
             };
+            // render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D, ch.texture.id());
+            // update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, VAO->get_buffer().id());
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
 
-            VAO->buffer_vertex_sub_data(0, vertices);
-            VAO->draw(GL_TRIANGLES, 0, 6);
-
-            x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            // render quad
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         }
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 private:
