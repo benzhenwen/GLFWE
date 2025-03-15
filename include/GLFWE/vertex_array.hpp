@@ -99,8 +99,13 @@ public:
         return vertex_buffer;
     }
 
+protected:
+    static int current_bound;
 public:
     void bind() {
+        if (current_bound == glfw_vertex_array) return;
+        current_bound = glfw_vertex_array;
+        
         if (!glfw_vertex_array) logger.log(Logger::WARNING) << "Attempting to bind a vertex array ID 0";
         glBindVertexArray(glfw_vertex_array);
         vertex_buffer.bind(ARRAY_BUFFER);

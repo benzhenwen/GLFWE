@@ -39,13 +39,6 @@ public:
         return glfw_shader_program;
     }
 
-    ShaderProgram & use() {
-        if (!glfw_shader_program) logger.log(Logger::WARNING) << "Attempting to use a shader program ID 0";
-        if (!linked) logger.log(Logger::WARNING) << "Attempting to use shader program " << glfw_shader_program << " before linked";
-        glUseProgram(glfw_shader_program);
-        return *this;
-    }
-
     ShaderProgram & attach_shader(GLFWE::Shader & shader) {
         glAttachShader(glfw_shader_program, shader.id());
         linked = false;
@@ -73,6 +66,18 @@ public:
             logger << "Program " << glfw_shader_program << " ignored link request because it was already linked";
         }
         return *this;
+    }
+
+protected:
+    static int current_bound;
+public:
+    void use() {
+        if (current_bound == glfw_shader_program) return;
+        current_bound = glfw_shader_program;
+        
+        if (!glfw_shader_program) logger.log(Logger::WARNING) << "Attempting to use a shader program ID 0";
+        if (!linked) logger.log(Logger::WARNING) << "Attempting to use shader program " << glfw_shader_program << " before linked";
+        glUseProgram(glfw_shader_program);
     }
 };
 }

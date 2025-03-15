@@ -136,8 +136,13 @@ public:
         return *this;
     }
 
+protected:
+    static int current_bound;
 public:
     void bind() {
+        if (current_bound == glfw_texture) return;
+        current_bound = glfw_texture;
+        
         if (!glfw_texture) logger.log(Logger::WARNING) << "Attempting to bind a texture ID 0";
         glBindTexture(GL_TEXTURE_2D, glfw_texture);
     }

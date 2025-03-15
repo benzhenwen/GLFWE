@@ -65,8 +65,13 @@ public:
         return *this;
     }
 
+protected:
+    static int current_bound;
 public:
     void bind(GLenum buffer_type) {
+        if (current_bound == glfw_buffer) return;
+        current_bound = glfw_buffer;
+        
         if (!glfw_buffer) logger.log(Logger::WARNING) << "Attempting to bind a buffer ID 0";
         glBindBuffer(buffer_type, glfw_buffer);
     }
