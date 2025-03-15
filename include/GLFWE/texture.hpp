@@ -136,21 +136,10 @@ public:
         return *this;
     }
 
-private:
-    static std::unordered_map<unsigned int, unsigned int> current_bound_texture;
 public:
     void bind() {
         if (!glfw_texture) logger.log(Logger::WARNING) << "Attempting to bind a texture ID 0";
-        if (glfw_texture != current_bound_texture[Window::get_current_context()]) {
-            glBindTexture(GL_TEXTURE_2D, glfw_texture);
-            current_bound_texture[Window::get_current_context()] = glfw_texture;
-        }
-    }
-    static unsigned int get_current_bound_array() {
-        return current_bound_texture[Window::get_current_context()];
-    }
-    bool is_bound() {
-        return current_bound_texture[Window::get_current_context()] == glfw_texture;
+        glBindTexture(GL_TEXTURE_2D, glfw_texture);
     }
 };
 }

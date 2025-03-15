@@ -99,21 +99,11 @@ public:
         return vertex_buffer;
     }
 
-private:
-    static std::unordered_map<unsigned int, unsigned int> current_bound_array;
 public:
     void bind() {
         if (!glfw_vertex_array) logger.log(Logger::WARNING) << "Attempting to bind a vertex array ID 0";
-        if (glfw_vertex_array != current_bound_array[Window::get_current_context()]) {
-            glBindVertexArray(glfw_vertex_array);
-            current_bound_array[Window::get_current_context()] = glfw_vertex_array;
-        }
-    }
-    static unsigned int get_current_bound_array() {
-        return current_bound_array[Window::get_current_context()];
-    }
-    bool is_bound() {
-        return current_bound_array[Window::get_current_context()] == glfw_vertex_array;
+        glBindVertexArray(glfw_vertex_array);
+        vertex_buffer.bind(ARRAY_BUFFER);
     }
 };
 }

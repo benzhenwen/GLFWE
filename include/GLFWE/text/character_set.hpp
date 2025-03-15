@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <GLFWE/window.hpp>
 #include <GLFWE/texture.hpp>
 #include <GLFWE/vertex_array.hpp>
 #include <GLFWE/shader.hpp>
@@ -96,58 +97,15 @@ public:
         logger << "Font destroyed";
     }
 
-    // the function we've all been waiting for!!
-    // void render_string(const std::string & text, float x, float y, float scale, glm::vec3 color) {
-    //     program->use();
-        
-    //     // projection
-    //     glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f);
-    //     glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
-        
-    //     // color
-    //     glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
-    
-    //     // iterate through all characters
-    //     std::string::const_iterator c;
-    //     for (c = text.begin(); c != text.end(); c++) {
-    //         Character & ch = characters[*c];
-    //         ch.texture.bind();
-
-    //         float xpos = x + ch.bearing.x * scale;
-    //         float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-
-    //         float w = ch.size.x * scale;
-    //         float h = ch.size.y * scale;
-
-    //         float vertices[6][4] = {
-    //             { xpos,     ypos + h,   0.0f, 0.0f },            
-    //             { xpos,     ypos,       0.0f, 1.0f },
-    //             { xpos + w, ypos,       1.0f, 1.0f },
-
-    //             { xpos,     ypos + h,   0.0f, 0.0f },
-    //             { xpos + w, ypos,       1.0f, 1.0f },
-    //             { xpos + w, ypos + h,   1.0f, 0.0f } 
-    //         };
-
-    //         VAO->buffer_vertex_sub_data(0, vertices);
-    //         VAO->draw(GL_TRIANGLES, 0, 6);
-
-    //         x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64)
-    //     }
-    // }
-
-    void render_string(const std::string & text, float x, float y, float scale, glm::vec3 color) {
-        
-        glm::mat4 projection = glm::ortho(0.0f, 800.0f, 0.0f, 800.0f);
-        glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
-
-        // activate corresponding render state	
+    void render_string(const glm::vec2 dimentions, const std::string & text, float x, float y, float scale, const glm::vec3 color) {
         program->use();
+        VAO-> bind();
+        
+        glm::mat4 projection = glm::ortho(0.0f, dimentions.x, 0.0f, dimentions.y);
+        glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
         // color
         glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
-
-        glBindVertexArray(VAO->id());
 
         // iterate through all characters
         std::string::const_iterator c;
@@ -160,6 +118,7 @@ public:
 
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
+
             // update VBO for each character
             float vertices[6][4] = {
                 { xpos,     ypos + h,   0.0f, 0.0f },            
@@ -170,20 +129,15 @@ public:
                 { xpos + w, ypos,       1.0f, 1.0f },
                 { xpos + w, ypos + h,   1.0f, 0.0f }           
             };
-            // render glyph texture over quad
-            glBindTexture(GL_TEXTURE_2D, ch.texture.id());
-            // update content of VBO memory
-            glBindBuffer(GL_ARRAY_BUFFER, VAO->get_buffer().id());
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
+            
+            ch.texture.bind();
 
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            // render quad
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            VAO->buffer_vertex_sub_data(0, vertices);
+            VAO->draw(GL_TRIANGLES, 6, 0);
+
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
             x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         }
-        glBindVertexArray(0);
-        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
 private:

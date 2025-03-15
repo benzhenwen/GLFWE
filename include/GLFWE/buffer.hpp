@@ -65,22 +65,10 @@ public:
         return *this;
     }
 
-
-private:
-    static std::unordered_map<unsigned int, unsigned int> current_bound_buffer;
 public:
     void bind(GLenum buffer_type) {
         if (!glfw_buffer) logger.log(Logger::WARNING) << "Attempting to bind a buffer ID 0";
-        if (glfw_buffer != current_bound_buffer[Window::get_current_context()]) {
-            glBindBuffer(buffer_type, glfw_buffer);
-            current_bound_buffer[Window::get_current_context()] = glfw_buffer;
-        }
-    }
-    static unsigned int get_current_bound_array() {
-        return current_bound_buffer[Window::get_current_context()];
-    }
-    bool is_bound() {
-        return current_bound_buffer[Window::get_current_context()] == glfw_buffer;
+        glBindBuffer(buffer_type, glfw_buffer);
     }
 };
 }
