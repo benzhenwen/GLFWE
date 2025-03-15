@@ -66,7 +66,7 @@ public:
     }
 
 protected:
-    static int current_bound;
+    static unsigned int current_bound;
 public:
     void bind(GLenum buffer_type) {
         if (current_bound == glfw_buffer) return;

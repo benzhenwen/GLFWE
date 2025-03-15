@@ -69,7 +69,7 @@ public:
     }
 
 protected:
-    static int current_bound;
+    static unsigned int current_bound;
 public:
     void use() {
         if (current_bound == glfw_shader_program) return;

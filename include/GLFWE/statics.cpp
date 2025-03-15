@@ -11,10 +11,10 @@ u_int16_t Window::window_id_increment = 1;
 u_int16_t Window::current_window_context = 0;
 std::unordered_map<u_int16_t, std::unique_ptr<Window>> Window::window_instances;
 
-int Buffer::current_bound = 0;
-int ShaderProgram::current_bound = 0;
-int Texture::current_bound = 0;
-int VertexArray::current_bound = 0;
+unsigned int Buffer::current_bound = 0;
+unsigned int ShaderProgram::current_bound = 0;
+unsigned int Texture::current_bound = 0;
+unsigned int VertexArray::current_bound = 0;
 
 // text vao and program
 std::unique_ptr<VertexArray> Text::CharacterSet::VAO;

@@ -137,7 +137,7 @@ public:
     }
 
 protected:
-    static int current_bound;
+    static unsigned int current_bound;
 public:
     void bind() {
         if (current_bound == glfw_texture) return;
