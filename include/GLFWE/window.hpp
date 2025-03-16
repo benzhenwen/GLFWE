@@ -9,6 +9,7 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 #include <logger/logger.hpp>
 
@@ -59,9 +60,9 @@ public:
 // -------------------- WINDOW CLASS RENDERING --------------------
 
 public:
-    void clear_color() {
+    void clear_color(glm::vec3 color = {0.8, 0.8, 0.8}) {
         make_context_current();
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(color.x, color.y, color.z, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -74,9 +75,9 @@ protected:
     u_int16_t window_id;
     GLFWwindow * glfw_window;
 
-    Window(std::string name, int width, int height):
+    Window(std::string name, glm::vec2 size):
     window_id(window_id_increment++),
-    glfw_window(glfwCreateWindow(width, height, name.data(), NULL, NULL)) {
+    glfw_window(glfwCreateWindow(size.x, size.y, name.data(), NULL, NULL)) {
         if (!glfw_window) {
             logger.log(Logger::CRITICAL) << "glfw window creation failed";
             exit(-1);
@@ -86,7 +87,7 @@ protected:
     }
 
 public:
-    static Window & create(std::string name = "window", int width = 640, int height = 480) {
+    static Window & create(std::string name = "window", glm::vec2 size = {640, 640}) {
         bool first_window_flag = !has_instance();
         if (first_window_flag) {
             if (!glfwInit()) { // init if glfw is currently closed
@@ -102,7 +103,7 @@ public:
             logger << "GLFW initiated";
         }
 
-        auto new_window = new Window(name, width, height);
+        auto new_window = new Window(name, size);
         window_instances.emplace(new_window->get_id(), std::unique_ptr<Window>(new_window));
         new_window->make_context_current();
 
