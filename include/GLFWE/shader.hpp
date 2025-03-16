@@ -43,7 +43,7 @@ public:
         return glfw_shader;
     }
 
-    Shader & load_raw(const std::string & data) {
+    Shader && load_raw(const std::string & data) {
         const char *c_str = data.c_str();
         glShaderSource(glfw_shader, 1, &c_str, NULL);
         glCompileShader(glfw_shader);
@@ -57,11 +57,10 @@ public:
         } else {
             logger << "Shader " << glfw_shader << " successfully compiled";
         }
-        return *this;
+        return std::move(*this);
     }
-    Shader & load_path(const std::string & path) {
-        load_raw(string_from_path(path));
-        return *this;
+    Shader && load_path(const std::string & path) {
+        return load_raw(string_from_path(path));
     }
 
 protected:

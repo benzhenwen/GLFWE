@@ -39,18 +39,18 @@ public:
         return glfw_shader_program;
     }
 
-    ShaderProgram & attach_shader(GLFWE::Shader & shader) {
+    ShaderProgram && attach_shader(GLFWE::Shader & shader) {
         glAttachShader(glfw_shader_program, shader.id());
         linked = false;
         logger << "Shader " << shader.id() << " successfully attached to program " << glfw_shader_program;
-        return *this;
+        return std::move(*this);
     }
 
     int get_uniform_location(const std::string & name) {
         return glGetUniformLocation(glfw_shader_program, name.data());
     }
 
-    ShaderProgram & link() {
+    ShaderProgram && link() {
         if (!linked) {
             glLinkProgram(glfw_shader_program);
             GLint success;
@@ -65,7 +65,7 @@ public:
         } else {
             logger << "Program " << glfw_shader_program << " ignored link request because it was already linked";
         }
-        return *this;
+        return std::move(*this);
     }
 
 protected:

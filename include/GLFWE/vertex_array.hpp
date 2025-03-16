@@ -65,34 +65,34 @@ public:
 
 
     template<typename T>
-    VertexArray & buffer_vertex_data(T & data, GLenum draw_type) {
+    VertexArray && buffer_vertex_data(T & data, GLenum draw_type) {
         bind();
         vertex_buffer.buffer_data(ARRAY_BUFFER, data, draw_type);
-        return *this;
+        return std::move(*this);
     }
-    VertexArray & buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
+    VertexArray && buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
         bind();
         vertex_buffer.buffer_data(ARRAY_BUFFER, data_size, data, draw_type);
-        return *this;
+        return std::move(*this);
     }
 
     template<typename T>
-    VertexArray & buffer_vertex_sub_data(unsigned int offset, T & data) {
+    VertexArray && buffer_vertex_sub_data(unsigned int offset, T & data) {
         bind();
         vertex_buffer.buffer_sub_data(ARRAY_BUFFER, offset, data);
-        return *this;
+        return std::move(*this);
     }
-    VertexArray & buffer_vertex_sub_data(unsigned int offset, unsigned int data_size, void * data) {
+    VertexArray && buffer_vertex_sub_data(unsigned int offset, unsigned int data_size, void * data) {
         bind();
         vertex_buffer.buffer_sub_data(ARRAY_BUFFER, offset, data_size, data);
-        return *this;
+        return std::move(*this);
     }
     
-    VertexArray & assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
+    VertexArray && assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
         bind();
         glEnableVertexAttribArray(location);  
         glVertexAttribPointer(location, size, type, normalized, stride, (const void*) offset);
-        return *this;
+        return std::move(*this);
     }
 
     Buffer & get_buffer() {

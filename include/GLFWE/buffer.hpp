@@ -46,23 +46,23 @@ public:
     #define DYNAMIC_DRAW GL_DYNAMIC_DRAW // set often & used many times
 
     template<typename T>
-    Buffer & buffer_data(GLenum buffer_type, T & data, GLenum access_type) {
+    Buffer && buffer_data(GLenum buffer_type, T & data, GLenum access_type) {
         return buffer_data(buffer_type, sizeof(data), data, access_type);
     }
-    Buffer & buffer_data(GLenum buffer_type, unsigned int data_size, void * data, GLenum access_type) {
+    Buffer && buffer_data(GLenum buffer_type, unsigned int data_size, void * data, GLenum access_type) {
         bind(buffer_type);
         glBufferData(buffer_type, data_size, data, access_type);
-        return *this;
+        return std::move(*this);
     }
 
     template<typename T>
-    Buffer & buffer_sub_data(GLenum buffer_type, unsigned int offset, T & data) {
+    Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, T & data) {
         return buffer_sub_data(buffer_type, offset, sizeof(data), data);
     }
-    Buffer & buffer_sub_data(GLenum buffer_type, unsigned int offset, unsigned int data_size, void * data) {
+    Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, unsigned int data_size, void * data) {
         bind(buffer_type);
         glBufferSubData(buffer_type, offset, data_size, data);
-        return *this;
+        return std::move(*this);
     }
 
 protected:

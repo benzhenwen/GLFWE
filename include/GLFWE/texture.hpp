@@ -46,7 +46,7 @@ public:
     // #define TEXTURE_3D GL_TEXTURE_3D
 
 
-    Texture & buffer_image_from_path(std::string path) {
+    Texture && buffer_image_from_path(std::string path) {
         stbi_set_flip_vertically_on_load(true);
 
         int width, height, nChannels;
@@ -58,17 +58,17 @@ public:
             logger.log(Logger::CRITICAL) << "Texture " << glfw_texture << " failed to load path: " << path;
         }
         stbi_image_free(data);
-        return *this;
+        return std::move(*this);
     }
 
-    Texture & buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data, unsigned int pack_alignment = 4) {
+    Texture && buffer_image_2D(int mipmap_level, GLint store_format, int width, int height, GLenum source_format, GLenum source_datatype, void* data, unsigned int pack_alignment = 4) {
         bind();
         glPixelStorei(GL_UNPACK_ALIGNMENT, pack_alignment);
         glTexImage2D(GL_TEXTURE_2D, mipmap_level, store_format, width, height, 0, source_format, source_datatype, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         
         logger << "Texture " << glfw_texture << " successfully loaded";
-        return *this;
+        return std::move(*this);
     }
 
     #define WRAP_REPEAT GL_REPEAT
@@ -85,7 +85,7 @@ public:
     };
 
     // Set color mask only when you are using WRAP_CLAMP_BORDER
-    Texture & set_wrapping_behavior(GLenum wrapping, GLenum axis = AXIS_ALL, Color mask_color = {0, 0, 0, 1}) {
+    Texture && set_wrapping_behavior(GLenum wrapping, GLenum axis = AXIS_ALL, Color mask_color = {0, 0, 0, 1}) {
         bind();
         if (wrapping == WRAP_CLAMP_BORDER) {
             glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, mask_color.data());
@@ -96,7 +96,7 @@ public:
         } else {
             glTexParameteri(GL_TEXTURE_2D, axis, wrapping);
         }
-        return *this;
+        return std::move(*this);
     }
 
     #define FILTER_NEAREST GL_NEAREST
@@ -105,7 +105,7 @@ public:
     #define ACTION_MINIMIZING GL_TEXTURE_MIN_FILTER
     #define ACTION_MAGNIFYING GL_TEXTURE_MAG_FILTER
     #define ACTION_ALL 0
-    Texture & set_filtering_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
+    Texture && set_filtering_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
         bind();
         if (action == ACTION_ALL) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, behaviour);
@@ -113,7 +113,7 @@ public:
         } else {
             glTexParameteri(GL_TEXTURE_2D, action, behaviour);
         }
-        return *this;
+        return std::move(*this);
     }
 
     // MIPMAP_(what mipmap to grab)_(pixel interpolation)
@@ -125,7 +125,7 @@ public:
     #define ACTION_MINIMIZING GL_TEXTURE_MIN_FILTER
     #define ACTION_MAGNIFYING GL_TEXTURE_MAG_FILTER
     #define ACTION_ALL 0
-    Texture & set_mipmap_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
+    Texture && set_mipmap_behavior(GLenum behaviour, GLenum action = ACTION_ALL) {
         bind();
         if (action == ACTION_ALL) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, behaviour);
@@ -133,7 +133,7 @@ public:
         } else {
             glTexParameteri(GL_TEXTURE_2D, action, behaviour);
         }
-        return *this;
+        return std::move(*this);
     }
 
 protected:
