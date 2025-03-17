@@ -8,9 +8,9 @@ a small wrapper for glfw3 written in c++. in development and being used for a va
 - textures
 - buffers
 - vertex arrays
-
-## In progress
 - Wrapper for string display
 
+## In progress
+- improve string wrapper to use only a single texture
+
 ## Issues
-- Improper binding system

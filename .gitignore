@@ -1,6 +1,8 @@
 /build/
 /.vscode/
 
+.meson-sub*
+
 # subprojects
 subprojects/*
 
