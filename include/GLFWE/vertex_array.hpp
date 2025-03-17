@@ -23,7 +23,9 @@ public:
     }
 
     VertexArray(VertexArray & other) = delete;
-    VertexArray(VertexArray && other): glfw_vertex_array(other.glfw_vertex_array) {
+    VertexArray(VertexArray && other): 
+    vertex_buffer(std::move(other.vertex_buffer)),
+    glfw_vertex_array(other.glfw_vertex_array) {
         other.glfw_vertex_array = 0;
     }
 
