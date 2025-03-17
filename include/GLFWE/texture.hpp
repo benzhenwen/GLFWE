@@ -66,8 +66,6 @@ public:
         glPixelStorei(GL_UNPACK_ALIGNMENT, pack_alignment);
         glTexImage2D(GL_TEXTURE_2D, mipmap_level, store_format, width, height, 0, source_format, source_datatype, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-        
-        logger << "Texture " << glfw_texture << " successfully loaded";
         return std::move(*this);
     }
 
