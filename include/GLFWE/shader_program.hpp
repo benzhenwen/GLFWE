@@ -22,7 +22,9 @@ public:
     }
 
     ShaderProgram(ShaderProgram & other) = delete;
-    ShaderProgram(ShaderProgram && other): glfw_shader_program(other.glfw_shader_program) {
+    ShaderProgram(ShaderProgram && other): 
+    glfw_shader_program(other.glfw_shader_program),
+    linked(other.linked) {
         other.glfw_shader_program = 0;
     }
 
