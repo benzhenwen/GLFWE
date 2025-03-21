@@ -12,5 +12,6 @@ a small wrapper for glfw3 written in c++. in development and being used for a va
 
 ## In progress
 - improve string wrapper to use only a single texture
+- simple shapes drawing
 
 ## Issues
