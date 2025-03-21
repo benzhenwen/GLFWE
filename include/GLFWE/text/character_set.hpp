@@ -20,7 +20,7 @@
 namespace GLFWE::Text {
 class CharacterSet {
 protected:
-    static constexpr Logger logger = Logger("GLFWTEXT");
+    static constexpr Logger logger = Logger("TEXT");
 
     struct Character {
         GLFWE::Texture texture; 
