@@ -9,9 +9,10 @@ a small wrapper for glfw3 written in c++. in development and being used for a va
 - buffers
 - vertex arrays
 - Wrapper for string display
+- drawing simple shapes - rectangles & lines
 
 ## In progress
 - improve string wrapper to use only a single texture
-- simple shapes drawing
+- more simple shapes drawing
 
 ## Issues
