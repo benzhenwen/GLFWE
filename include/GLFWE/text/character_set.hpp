@@ -20,7 +20,7 @@
 namespace GLFWE::Text {
 class CharacterSet {
 protected:
-    static constexpr Logger logger = Logger("TEXT");
+    static constexpr Logger logger = Logger("Text");
 
     struct Character {
         GLFWE::Texture texture; 
@@ -97,12 +97,12 @@ public:
         logger << "Font destroyed";
     }
 
-    void render_string(const glm::vec2 dimentions, const std::string & text, float x, float y, float scale, const glm::vec3 color) {
+    void render_string(const glm::vec2 projection, const std::string & text, float x, float y, float scale, const glm::vec3 color) {
         program->use();
         VAO-> bind();
         
-        glm::mat4 projection = glm::ortho(0.0f, dimentions.x, 0.0f, dimentions.y);
-        glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glm::mat4 projection_matrix = glm::ortho(0.0f, projection.x, 0.0f, projection.y);
+        glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
         // color
         glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
