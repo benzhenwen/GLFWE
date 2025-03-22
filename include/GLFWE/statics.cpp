@@ -7,8 +7,8 @@
 
 #include <GLFWE/text/character_set.hpp>
 
-#include <GLFWE/shape/shaders.hpp>
-#include <GLFWE/shape/square.hpp>
+#include <GLFWE/shape/shape_shader.hpp>
+#include <GLFWE/shape/quad.hpp>
 
 using namespace GLFWE;
 
@@ -28,6 +28,6 @@ std::unique_ptr<VertexArray> Text::CharacterSet::VAO;
 std::unique_ptr<ShaderProgram> Text::CharacterSet::program;
 
 // shapes
-std::map<Shape::Shaders::Type, std::unique_ptr<ShaderProgram>> Shape::Shaders::programs;
+std::unique_ptr<ShaderProgram> Shape::ShapeShader::program;
 
-std::unique_ptr<VertexArray> Shape::Square::VAO;
+std::unique_ptr<VertexArray> Shape::Quad::VAO;

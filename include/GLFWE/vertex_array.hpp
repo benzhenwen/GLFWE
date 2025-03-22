@@ -65,8 +65,12 @@ public:
     #define TYPE_UNSIGNED_INT GL_UNSIGNED_INT
 
     template<typename T>
-    VertexArray && buffer_vertex_data(std::vector<T> data, GLenum access_type) {
-        return buffer_vertex_data(sizeof(data.data()) * data.size(), data.data(), access_type);
+    VertexArray && buffer_vertex_data(std::vector<T> & data, GLenum draw_type) {
+        return buffer_vertex_data(sizeof(data.data()) * data.size(), data.data(), draw_type);
+    }
+    template<typename T>
+    VertexArray && buffer_vertex_data(T & data, GLenum draw_type) {
+        return buffer_vertex_data(sizeof(data), data, draw_type);
     }
     VertexArray && buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
         bind();
@@ -75,8 +79,12 @@ public:
     }
 
     template<typename T>
-    VertexArray && buffer_vertex_sub_data(unsigned int offset, std::vector<T> data) {
+    VertexArray && buffer_vertex_sub_data(unsigned int offset, std::vector<T> & data) {
         return buffer_vertex_sub_data(offset, sizeof(data.data()) * data.size(), data.data());
+    }
+    template<typename T>
+    VertexArray && buffer_vertex_sub_data(unsigned int offset, T & data) {
+        return buffer_vertex_sub_data(offset, sizeof(data), data);
     }
     VertexArray && buffer_vertex_sub_data(unsigned int offset, unsigned int data_size, void * data) {
         bind();

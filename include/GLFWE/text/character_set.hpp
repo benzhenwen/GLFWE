@@ -97,12 +97,15 @@ public:
         logger << "Font destroyed";
     }
 
-    void render_string(const glm::vec2 projection, const std::string & text, float x, float y, float scale, const glm::vec3 color) {
+    static void set_projection(glm::vec2 projection) {
         program->use();
-        VAO-> bind();
-        
         glm::mat4 projection_matrix = glm::ortho(0.0f, projection.x, 0.0f, projection.y);
         glUniformMatrix4fv(program->get_uniform_location("projection"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
+    }
+
+    void render_string(const std::string & text, glm::vec2 position, float scale, const glm::vec3 color) {
+        program->use();
+        VAO-> bind();
 
         // color
         glUniform3f(program->get_uniform_location("textColor"), color.x, color.y, color.z);
@@ -113,8 +116,8 @@ public:
         {
             Character & ch = characters[*c];
 
-            float xpos = x + ch.bearing.x * scale;
-            float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+            float xpos = position.x + ch.bearing.x * scale;
+            float ypos = position.y - (ch.size.y - ch.bearing.y) * scale;
 
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
@@ -136,7 +139,7 @@ public:
             VAO->draw(GL_TRIANGLES, 6, 0);
 
             // now advance cursors for next glyph (note that advance is number of 1/64 pixels)
-            x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+            position.x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
         }
     }
 
@@ -158,8 +161,8 @@ private:
 
             void main()
             {
-            gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
-            TexCoords = vertex.zw;
+                gl_Position = projection * vec4(vertex.xy, 0.0, 1.0);
+                TexCoords = vertex.zw;
         })");
         auto fragment_shader = GLFWE::Shader(FRAGMENT_SHADER);
         fragment_shader.load_raw(
@@ -177,7 +180,14 @@ private:
             })"
         );
 
-        program->attach_shader(vertex_shader).attach_shader(fragment_shader).link();
+        program->attach_shader(vertex_shader).attach_shader(fragment_shader).link().use();
+
+        if (!Window::has_only_one_instance()) logger.log(Logger::WARNING) << "Multiple window instances detected. Please manually decalre the projection for GLFWE/Shape/CharacterSet";
+        else {
+            glm::vec2 proj_size = Window::get_single_instance_size();
+            logger << "Automatically configuring projection for CharacterSet to: (" << proj_size.x << ", " << proj_size.y << ")";
+            set_projection(proj_size);
+        }
     }
 };
 }
