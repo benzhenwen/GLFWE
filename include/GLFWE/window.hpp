@@ -43,6 +43,14 @@ public:
         return !has_instance();
     }
 
+// -------------------- FOR PROJECTIONS --------------------
+    static inline bool has_only_one_instance() {
+        return window_instances.size() == 1;
+    }
+    static inline glm::vec2 get_single_instance_size() {
+        return window_instances.begin()->second->get_window_size();
+    }
+
 // -------------------- EVENT HANDLING --------------------
 
 
@@ -70,6 +78,14 @@ public:
         glfwSwapBuffers(glfw_window);
     }
 
+// -------------------- WINDOW CLASS INFORMATION --------------------
+protected:
+    glm::vec2 window_size;
+public:
+    glm::vec2 get_window_size() {
+        return window_size;
+    }
+
 // -------------------- WINDOW CLASS CONSTRUCTION AND DECONSTRUCTION --------------------
 protected:
     u_int16_t window_id;
@@ -77,7 +93,8 @@ protected:
 
     Window(std::string name, glm::vec2 size):
     window_id(window_id_increment++),
-    glfw_window(glfwCreateWindow(size.x, size.y, name.data(), NULL, NULL)) {
+    glfw_window(glfwCreateWindow(size.x, size.y, name.data(), NULL, NULL)),
+    window_size(size) {
         if (!glfw_window) {
             logger.log(Logger::CRITICAL) << "glfw window creation failed";
             exit(-1);
