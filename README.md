@@ -17,3 +17,6 @@ a small wrapper for glfw3 written in c++. in development and being used for a va
 - mouse and keyboard input
 
 ## Issues
+
+## Examples
+https://github.com/benzhenwen/basic_neural_network/
