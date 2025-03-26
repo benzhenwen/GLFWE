@@ -16,17 +16,18 @@ namespace GLFWE::Shape {
 
     enum Center {TOP_LEFT, CENTER};
 
-    static ConvexPolygon Rectangle(glm::vec2 dimentions, Center center = TOP_LEFT) {
+    static ConvexPolygon Rectangle(glm::vec2 dimentions, Center center = TOP_LEFT) { return Rectangle({0, 0}, dimentions, center); }
+    static ConvexPolygon Rectangle(glm::vec2 position, glm::vec2 dimentions, Center center = TOP_LEFT) {
         const float w = dimentions.x;
         const float h = dimentions.y;
 
         switch (center) {
             case TOP_LEFT:
                 return ConvexPolygon {
-                    {0, 0},
-                    {w, 0},
-                    {w, h},
-                    {0, h}
+                    position + glm::vec2{0, 0},
+                    position + glm::vec2{w, 0},
+                    position + glm::vec2{w, h},
+                    position + glm::vec2{0, h}
                 };
 
             case CENTER:
@@ -40,6 +41,7 @@ namespace GLFWE::Shape {
                 };
         }
     }
+
     static ConvexPolygon line(glm::vec2 point_a, glm::vec2 point_b, float thickness) {
         glm::vec2 ninety(point_b.y - point_a.y, -point_b.x + point_a.x);
         ninety *= thickness / glm::length(ninety);
