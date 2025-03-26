@@ -51,7 +51,7 @@ public:
         return window_instances.begin()->second->get_window_size();
     }
 
-// -------------------- EVENT HANDLING --------------------
+// -------------------- KEY EVENT HANDLING --------------------
 
 
 

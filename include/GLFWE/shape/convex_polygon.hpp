@@ -15,21 +15,14 @@ namespace GLFWE::Shape {
 class ConvexPolygon: public std::vector<glm::vec2> {
 public:
     using std::vector<glm::vec2>::vector;
-
-    // shoutout - https://www.youtube.com/watch?app=desktop&v=RSXM9bgqxJM
     bool contains_point(glm::vec2 point) {
+        bool last_direction = glm::cross(glm::vec3{at(0)-at(size()-1), 0}, glm::vec3{point-at(size()-1), 0}).z >= 0;
         for (int i = 1; i < size(); i++) {
-            const float x1 = at(i-1).x;
-            const float y1 = at(i-1).x;
-            const float x2 = at(i).x;
-            const float y2 = at(i).x;
-
-            bool mod_2_equals_1 = false;
-            if ((point.y < y1) != (point.y < y2) && point.x < (x1 + ((point.y-y1)/(y2-y1)) * (x2-x1))) {
-                mod_2_equals_1 = !mod_2_equals_1;
-            }
-            return mod_2_equals_1;
+            if (last_direction != glm::cross(glm::vec3{at(i)-at(i-1), 0}, glm::vec3{point-at(i-1), 0}).z >= 0) {
+                return false;
+            };
         }
+        return true;
     }
 
 
