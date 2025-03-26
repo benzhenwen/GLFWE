@@ -49,7 +49,7 @@ public:
 
     template<typename T>
     Buffer && buffer_data(GLenum buffer_type, std::vector<T> & data, GLenum access_type) {
-        return buffer_data(buffer_type, sizeof(data.data()) * data.size(), data.data(), access_type);
+        return buffer_data(buffer_type, data.data(), access_type);
     }
     template<typename T>
     Buffer && buffer_data(GLenum buffer_type, T & data, GLenum access_type) {
@@ -63,11 +63,11 @@ public:
 
     template<typename T>
     Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, const std::vector<T> & data) {
-        return buffer_sub_data(buffer_type, offset, sizeof(data.data()) * data.size(), data.data());
+        return buffer_sub_data(buffer_type, offset, data.data());
     }
     template<typename T>
     Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, T & data) {
-        return buffer_sub_data(buffer_type, offset, sizeof(data.data()) * data.size(), data.data());
+        return buffer_sub_data(buffer_type, offset, sizeof(data), data);
     }
     Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, unsigned int data_size, void * data) {
         bind(buffer_type);
