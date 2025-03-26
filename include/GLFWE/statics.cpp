@@ -16,6 +16,7 @@ using namespace GLFWE;
 u_int16_t Window::window_id_increment = 1;
 u_int16_t Window::current_window_context = 0;
 std::unordered_map<u_int16_t, std::unique_ptr<Window>> Window::window_instances;
+// std::unordered_map<GLFWwindow*, std::function<void(double xpos, double ypos)>> Window::cursor_pos_callback_functions;
 
 // util classes
 unsigned int Buffer::current_bound = 0;

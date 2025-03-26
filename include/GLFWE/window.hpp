@@ -44,6 +44,8 @@ public:
     }
 
 // -------------------- FOR PROJECTIONS --------------------
+
+public:
     static inline bool has_only_one_instance() {
         return window_instances.size() == 1;
     }
@@ -51,9 +53,26 @@ public:
         return window_instances.begin()->second->get_window_size();
     }
 
+
+// -------------------- MOUSE EVENT HANDLING --------------------
+
+// protected:
+//     static std::unordered_map<GLFWwindow*, std::function<void(double xpos, double ypos)>> cursor_pos_callback_functions;
+
+// public:
+//     static void cursor_pos_callback_function(GLFWwindow* window, double xpos, double ypos) {
+//         cursor_pos_callback_functions.at(window)(xpos, ypos);
+//     }
+//     void set_cursor_pos_callback(std::function<void(double xpos, double ypos)> & func) {
+//         cursor_pos_callback_functions.emplace(*this, [this, func](GLFWwindow* window, double xpos, double ypos) {
+//             func(xpos, ypos);
+//         });
+//         glfwSetCursorPosCallback(glfw_window, cursor_pos_callback_function);
+//     }
+
 // -------------------- KEY EVENT HANDLING --------------------
 
-
+public:
 
 // -------------------- WINDOW CLASS UPDATE CYCLE --------------------
 
@@ -141,13 +160,12 @@ public:
     }
 
     void destroy() {
-        if(!window_instances.erase(get_id())) {
-            logger.log(Logger::WARNING) << "Attempted to destroy window " << get_id() << " but could not find instance";
-        }
+        window_instances.erase(get_id());
         terminate();
     }
 
     ~Window() {
+        destroy();
         glfwDestroyWindow(glfw_window);
         glfw_window = nullptr;
         logger << "Window " << get_id() << " destroyed";
