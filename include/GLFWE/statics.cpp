@@ -8,7 +8,7 @@
 #include <GLFWE/text/character_set.hpp>
 
 #include <GLFWE/shape/shape_shader.hpp>
-#include <GLFWE/shape/quad.hpp>
+#include <GLFWE/shape/convex_polygon.hpp>
 
 using namespace GLFWE;
 
@@ -30,4 +30,4 @@ std::unique_ptr<ShaderProgram> Text::CharacterSet::program;
 // shapes
 std::unique_ptr<ShaderProgram> Shape::ShapeShader::program;
 
-std::unique_ptr<VertexArray> Shape::Quad::VAO;
+std::unique_ptr<VertexArray> Shape::ConvexPolygon::VAO;

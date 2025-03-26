@@ -17,7 +17,7 @@
 namespace GLFWE::Shape {
 class ShapeShader {
 protected:
-    static constexpr Logger logger = Logger("SHAPE");
+    static constexpr Logger logger = Logger("Shape Shader");
 
     ShapeShader() = delete;
 
@@ -29,12 +29,22 @@ public:
         program->use();
     }
 
-    static void set_color(glm::vec3 color) {
-        set_color({color, 1.0f});
+    static void set_draw_color(glm::vec3 color) {
+        set_draw_color({color, 1.0f});
     }
-    static void set_color(glm::vec4 color) {
+    static void set_draw_color(glm::vec4 color) {
         use();
         glUniform4f(program->get_uniform_location("color"), color.r, color.g, color.b, color.a);
+    }
+
+    static void set_draw_position(glm::vec2 position) {
+        use();
+        glUniform2f(program->get_uniform_location("position"), position.x, position.y);
+    }
+
+    static void set_draw_depth(float depth) {
+        use();
+        glUniform1f(program->get_uniform_location("depth"), depth);
     }
 
     static void set_projection(glm::vec2 projection) {
@@ -58,13 +68,16 @@ protected:
 
         Shader vertex_shader = Shader(VERTEX_SHADER).load_raw(R"(
             #version 330 core
-            layout (location = 0) in vec3 aPos;
+            layout (location = 0) in vec2 aPos;
 
             uniform mat4 projection;
+
+            uniform vec2 position;
+            uniform int depth;
             
             void main()
             {
-                gl_Position = projection * vec4(aPos.xyz, 1.0);
+                gl_Position = projection * vec4(aPos.xy + position.xy, depth, 1.0);
         })");
         Shader fragment_shader = Shader(FRAGMENT_SHADER).load_raw(R"(
             #version 330 core
@@ -80,6 +93,7 @@ protected:
         program->attach_shader(vertex_shader).attach_shader(fragment_shader).link().use();  
         glUniform4f(program->get_uniform_location("color"), 0, 0, 0, 1); 
 
+        // automatically set projection if possible
         if (!Window::has_only_one_instance()) logger.log(Logger::WARNING) << "Multiple window instances detected. Please manually decalre the projection for GLFWE/Shape/ShapeShader";
         else {
             glm::vec2 proj_size = Window::get_single_instance_size();
