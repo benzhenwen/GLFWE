@@ -57,7 +57,7 @@ public:
         VAO->buffer_vertex_data(sizeof(data()) * size(), data(), DYNAMIC_DRAW);
         VAO->draw(GL_TRIANGLE_FAN, 4);
     }
-    
+
     void draw() {
         ShapeShader::use();
         if (VAO.get() == nullptr) init_vao();
