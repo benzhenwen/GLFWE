@@ -68,7 +68,7 @@ public:
     }
     template<typename T>
     Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, T & data) {
-        return buffer_sub_data(buffer_type, offset, sizeof(data), data);
+        return buffer_sub_data(buffer_type, offset, sizeof(T), data);
     }
     Buffer && buffer_sub_data(GLenum buffer_type, unsigned int offset, unsigned int data_size, void * data) {
         bind(buffer_type);

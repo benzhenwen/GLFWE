@@ -70,7 +70,7 @@ public:
     }
     template<typename T>
     VertexArray && buffer_vertex_data(T & data, GLenum draw_type) {
-        return buffer_vertex_data(sizeof(data), data, draw_type);
+        return buffer_vertex_data(sizeof(T), data, draw_type);
     }
     VertexArray && buffer_vertex_data(unsigned int data_size, void * data, GLenum draw_type) {
         bind();
@@ -84,7 +84,7 @@ public:
     }
     template<typename T>
     VertexArray && buffer_vertex_sub_data(unsigned int offset, T & data) {
-        return buffer_vertex_sub_data(offset, sizeof(data), data);
+        return buffer_vertex_sub_data(offset, sizeof(T), data);
     }
     VertexArray && buffer_vertex_sub_data(unsigned int offset, unsigned int data_size, void * data) {
         bind();
