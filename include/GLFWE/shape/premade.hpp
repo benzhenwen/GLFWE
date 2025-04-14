@@ -33,10 +33,10 @@ namespace GLFWE::Shape {
                 const float w2 = w / 2;
                 const float h2 = h / 2;
                 return ConvexPolygon {
-                    {-w2, -h2},
-                    {w2, -h2},
-                    {w2, h2},
-                    {-w2, h2}
+                    position + glm::vec2{-w2, -h2},
+                    position + glm::vec2{w2, -h2},
+                    position + glm::vec2{w2, h2},
+                    position + glm::vec2{-w2, h2}
                 };
         }
     }

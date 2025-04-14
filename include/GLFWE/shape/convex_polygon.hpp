@@ -36,26 +36,18 @@ public:
     if color or depth are not specified, the previous color / depth will be used instead
     shapes drawn at the same depth will be rendered last on top
     */
-    void draw(glm::vec2 position, glm::vec3 color, float depth) {
+    void draw(glm::vec3 color, float depth) {
         ShapeShader::set_draw_color(color);
-        draw(position, depth);
-    }
-    void draw(glm::vec2 position, glm::vec3 color) {
-        ShapeShader::set_draw_color(color);
-        draw(position);
-    }
-    void draw(glm::vec2 position, float depth) {
         ShapeShader::set_draw_depth(depth);
-        draw(position);
+        draw();
     }
-    void draw(glm::vec2 position) {
-        ShapeShader::set_draw_position(position);
-
-        if (VAO.get() == nullptr) init_vao();
-        VAO->bind();
-
-        VAO->buffer_vertex_data(sizeof(data()) * size(), data(), DYNAMIC_DRAW);
-        VAO->draw(GL_TRIANGLE_FAN, 4);
+    void draw(glm::vec3 color) {
+        ShapeShader::set_draw_color(color);
+        draw();
+    }
+    void draw(float depth) {
+        ShapeShader::set_draw_depth(depth);
+        draw();
     }
 
     void draw() {
