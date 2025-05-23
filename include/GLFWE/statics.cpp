@@ -30,5 +30,3 @@ std::unique_ptr<ShaderProgram> Text::CharacterSet::program;
 
 // shapes
 std::unique_ptr<ShaderProgram> Shape::ShapeShader::program;
-
-std::unique_ptr<VertexArray> Shape::ConvexPolygon::VAO;
