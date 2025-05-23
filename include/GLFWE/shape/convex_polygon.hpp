@@ -15,7 +15,7 @@ public:
 
     using Polygon::Polygon;
 
-    bool contains_point(glm::vec2 point) {
+    bool contains_point(glm::vec2 point) override {
         bool last_direction = glm::cross(glm::vec3{at(0)-at(size()-1), 0}, glm::vec3{point-at(size()-1), 0}).z >= 0;
         for (int i = 1; i < size(); i++) {
             if (last_direction != glm::cross(glm::vec3{at(i)-at(i-1), 0}, glm::vec3{point-at(i-1), 0}).z >= 0) {

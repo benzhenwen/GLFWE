@@ -29,6 +29,8 @@ public:
         }
     }
 
+    virtual bool contains_point(glm::vec2 point);
+
 };
 }
 
