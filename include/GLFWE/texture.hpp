@@ -45,14 +45,32 @@ public:
     // #define TEXTURE_2D GL_TEXTURE_2D
     // #define TEXTURE_3D GL_TEXTURE_3D
 
-
-    Texture && buffer_image_from_path(std::string path) {
+    #define COLOR_RG GL_RG
+    #define COLOR_RGB GL_RGB
+    #define COLOR_RGBA GL_RGBA
+    Texture && buffer_image_from_path(std::string path, GLenum imageFormat = 0) {
         stbi_set_flip_vertically_on_load(true);
 
         int width, height, nChannels;
         unsigned char * data = stbi_load(path.data(), &width, &height, &nChannels, 0);
+
+        if (imageFormat == 0) {
+            switch (nChannels) {
+                case 2:
+                    imageFormat = COLOR_RG;
+                    break;
+                case 3:
+                default:
+                    imageFormat = COLOR_RGB;
+                    break;
+                case 4:
+                    imageFormat = COLOR_RGBA;
+                    break;
+            }
+        }
+
         if (data) {
-            buffer_image_2D(0, GL_RGB, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+            buffer_image_2D(0, imageFormat, width, height, imageFormat, GL_UNSIGNED_BYTE, data);
             logger << "Texture " << glfw_texture << " successfully loaded";
         } else {
             logger.log(Logger::CRITICAL) << "Texture " << glfw_texture << " failed to load path: " << path;
