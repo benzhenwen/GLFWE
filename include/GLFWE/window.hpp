@@ -111,9 +111,9 @@ protected:
     GLFWwindow * glfw_window;
 
     Window(std::string name, glm::vec2 size):
+    window_size(size),
     window_id(window_id_increment++),
-    glfw_window(glfwCreateWindow(size.x, size.y, name.data(), NULL, NULL)),
-    window_size(size) {
+    glfw_window(glfwCreateWindow(size.x, size.y, name.data(), NULL, NULL)) {
         if (!glfw_window) {
             logger.log(Logger::CRITICAL) << "glfw window creation failed";
             exit(-1);

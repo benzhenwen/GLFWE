@@ -95,7 +95,7 @@ public:
     VertexArray && assign_vertex_attribute(unsigned int location, unsigned int size, GLenum type, bool normalized, unsigned int stride = 0, unsigned int offset = 0) {        
         bind();
         glEnableVertexAttribArray(location);  
-        glVertexAttribPointer(location, size, type, normalized, stride, (const void*) offset);
+        glVertexAttribPointer(location, size, type, normalized, stride, (const void*) (long) offset);
         return std::move(*this);
     }
 

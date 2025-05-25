@@ -12,6 +12,8 @@
 
 #include <logger/logger.hpp>
 
+// TODO: hide warnings for unsued functions for this file
+
 namespace GLFWE::Shape {
 
     enum Center {TOP_LEFT, CENTER};
@@ -39,6 +41,8 @@ namespace GLFWE::Shape {
                     position + glm::vec2{-w2, h2}
                 };
         }
+
+        return ConvexPolygon{}; 
     }
     static ConvexPolygon Rectangle(glm::vec2 dimentions, Center center = TOP_LEFT) { return Rectangle({0, 0}, dimentions, center); }
 
