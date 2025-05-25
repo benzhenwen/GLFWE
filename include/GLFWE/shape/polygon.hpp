@@ -29,7 +29,7 @@ public:
         }
     }
 
-    virtual bool contains_point(glm::vec2 point);
+    virtual bool contains_point(glm::vec2 point) = 0;
 
 };
 }
